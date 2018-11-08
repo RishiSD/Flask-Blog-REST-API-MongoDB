@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from werkzeug.security import safe_str_cmp
+from werkzeug.security import check_password_hash
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -11,7 +11,6 @@ from flask_jwt_extended import (
 from blogpost import mongo
 from blogpost.users.utils import to_dict
 from blogpost.utils import BLACKLIST
-
 
 users = Blueprint('users', __name__)
 
@@ -34,7 +33,7 @@ def signup_user():
 def login():
     user = mongo.db.users.find_one({'username': request.json['username']})
 
-    if user and safe_str_cmp(request.json['password'], user['password']):
+    if user and check_password_hash(user['password'], request.json['password']):
         access_token = create_access_token(identity=str(user['_id']),
                                            fresh=True)
         refresh_token = create_refresh_token(str(user['_id']))
