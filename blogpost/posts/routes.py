@@ -31,6 +31,14 @@ def get_post(post_id):
     return jsonify({'result': id_to_str(q)})
 
 
+@posts.route('/userpost/<string:username>', methods=['GET'])
+def get_user_posts(username):
+    output = []
+    for q in mongo.db.posts.find({'author': username}).sort('date_posted', DESCENDING):
+        output.append(id_to_str(q))    
+    return jsonify({'result': output})
+
+
 @posts.route('/post', methods=['POST'])
 @jwt_required
 def add_post():
@@ -49,3 +57,13 @@ def update_post(post_id):
     except (InvalidId, TypeError):
         return jsonify({'message': 'Requested post_id is Invalid'}), 404
     return jsonify({'result': id_to_str(post)})
+
+
+@posts.route('/post/<string:post_id>', methods=['DELETE'])
+@jwt_required
+def delete_post(post_id):
+    try:
+        post = mongo.db.posts.find_one_and_delete({'_id': ObjectId(post_id)})
+    except (InvalidId, TypeError):
+        return jsonify({'message': 'Requested post_id is Invalid'}), 404
+    return jsonify({'message': 'Post deletion successful'})
