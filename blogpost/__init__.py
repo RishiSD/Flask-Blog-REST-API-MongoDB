@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_pymongo import PyMongo
 from flask_jwt_extended import JWTManager
 from blogpost.config import Config
@@ -27,5 +27,9 @@ def create_app(config_class=Config):
     from blogpost.users.routes import users
     app.register_blueprint(posts)
     app.register_blueprint(users)
+
+    @app.route("/")
+    def index():
+        return render_template('index.html')
 
     return app

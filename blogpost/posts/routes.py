@@ -8,12 +8,6 @@ from blogpost.posts.utils import to_dict, id_to_str
 posts = Blueprint('posts', __name__)
 
 
-@posts.route("/")
-@jwt_required
-def hello():
-    return "<h3> Welcome to BlogPost MongoDB REST API !!! </h3>"
-
-
 @posts.route('/post', methods=['GET'])
 def get_all_posts():
     output = []
